@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafe Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-3xl font-bold text-gray-800">Cafe Management</a>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="/orders/" id="orders-link" class="text-gray-700 hover:text-blue-600 transition duration-300">Orders</a>
+                    <a href="/dishes/" id="dishes-link" class="text-gray-700 hover:text-blue-600 transition duration-300">Dishes</a>
+                    <a href="/tables/" id="tables-link" class="text-gray-700 hover:text-blue-600 transition duration-300">Tables</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12">
+        <div class="max-w-4xl mx-auto">
+            <!-- Welcome Section -->
+            <div class="bg-white rounded-lg shadow-xl p-8 mb-6">
+                <h1 class="text-4xl font-bold text-gray-800 mb-6 text-center">Welcome to Cafe Management</h1>
+                <p class="text-lg text-gray-600 mb-8 text-center">Select a section to manage your cafe:</p>
+
+                <!-- Quick Access Cards (2x2 Grid) -->
+                <div class="grid grid-cols-2 gap-6">
+                    <a href="javascript:void(0)" id="orders-list-card" class="block p-6 bg-blue-50 hover:bg-blue-100 rounded-lg shadow-md transition duration-300 hover:scale-105">
+                        <h2 class="text-xl font-semibold text-blue-700">Orders List</h2>
+                        <p class="text-blue-600 mt-2">View all orders</p>
+                    </a>
+
+                    <a href="javascript:void(0)" id="order-dishes-card" class="block p-6 bg-blue-50 hover:bg-blue-100 rounded-lg shadow-md transition duration-300 hover:scale-105">
+                        <h2 class="text-xl font-semibold text-blue-700">Order Dishes</h2>
+                        <p class="text-blue-600 mt-2">View dishes in orders</p>
+                    </a>
+
+                    <a href="javascript:void(0)" id="dishes-card" class="block p-6 bg-green-50 hover:bg-green-100 rounded-lg shadow-md transition duration-300 hover:scale-105">
+                        <h2 class="text-xl font-semibold text-green-700">Dishes</h2>
+                        <p class="text-green-600 mt-2">Update menu items</p>
+                    </a>
+
+                    <a href="javascript:void(0)" id="tables-card" class="block p-6 bg-purple-50 hover:bg-purple-100 rounded-lg shadow-md transition duration-300 hover:scale-105">
+                        <h2 class="text-xl font-semibold text-purple-700">Tables</h2>
+                        <p class="text-purple-600 mt-2">Manage table status</p>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Data from API -->
+            <div id="api-data" class="bg-white rounded-lg shadow-xl p-8 mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Data from API</h2>
+                <div id="data-container" class="space-y-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-lg mt-8 py-4">
+        <div class="container mx-auto text-center text-gray-600">
+            <p>© 2025 Cafe Management - All rights reserved</p>
+        </div>
+    </footer>
+
+<script>
+// Function to fetch data from the API and display it dynamically
+function fetchData(apiUrl, containerId) {
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            // Process and display data dynamically
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';  // Clear any previous content
+
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'p-6 bg-gray-50 rounded-lg shadow-md hover:shadow-xl transition duration-300';
+
+                    // Check for each data type and display accordingly
+                    if (item.name && item.price) {
+                        // Display dishes
+                        itemElement.innerHTML = `<h3 class="text-xl font-semibold text-gray-700">${item.name}</h3><p class="text-gray-600">${item.price} сум</p>`;
+                    } else if (item.number && item.seats) {
+                        // Display tables
+                        itemElement.innerHTML = `<h3 class="text-xl font-semibold text-gray-700">Table: ${item.number}</h3><p class="text-gray-600">Seats: ${item.seats}</p>`;
+                    } else if (item.dish && item.quantity) {
+                        // Display order dishes
+                        itemElement.innerHTML = `<h3 class="text-xl font-semibold text-gray-700">${item.dish.name} (Количество: ${item.quantity})</h3><p class="text-gray-600">Price: ${item.dish.price * item.quantity} сум</p>`;
+                    } else if (item.table && item.status && item.total_price) {
+                        // Display orders
+                        itemElement.innerHTML = `<h3 class="text-xl font-semibold text-gray-700">Order for Table: ${item.table}</h3><p class="text-gray-600">Status: ${item.status}</p><p class="text-gray-600">Total Price: ${item.total_price} сум</p>`;
+                    }
+                    container.appendChild(itemElement);
+                });
+            } else {
+                container.innerHTML = '<p class="text-gray-600">No data available.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+}
+
+// Fetch data for different sections when clicked
+document.getElementById('orders-list-card').addEventListener('click', function () {
+    fetchData('http://0.0.0.0:8088/orders/orders/', 'data-container');
+});
+
+document.getElementById('order-dishes-card').addEventListener('click', function () {
+    fetchData('http://0.0.0.0:8088/orders/order_dishes/', 'data-container');
+});
+
+document.getElementById('dishes-card').addEventListener('click', function () {
+    fetchData('http://0.0.0.0:8088/dishes/', 'data-container');
+});
+
+document.getElementById('tables-card').addEventListener('click', function () {
+    fetchData('http://0.0.0.0:8088/tables/', 'data-container');
+});
+</script>
+
+</body>
+</html>

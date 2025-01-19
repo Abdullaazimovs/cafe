@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Table - Cafe Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-3xl font-bold text-gray-800">Cafe Management</a>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="/orders/" id="orders-link" class="text-gray-700 hover:text-blue-600 transition duration-300">Orders</a>
+                    <a href="/dishes/" id="dishes-link" class="text-gray-700 hover:text-blue-600 transition duration-300">Dishes</a>
+                    <a href="/tables/" id="tables-link" class="text-gray-700 hover:text-blue-600 transition duration-300">Tables</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12">
+        <div class="max-w-4xl mx-auto">
+            <!-- Edit Table Section -->
+            <div class="bg-white rounded-lg shadow-xl p-8 mb-6">
+                <h1 class="text-4xl font-bold text-gray-800 mb-6 text-center">Edit Table</h1>
+                <p class="text-lg text-gray-600 mb-8 text-center">Modify the details of the table below:</p>
+
+                <!-- Edit Table Form -->
+                <form id="edit-table-form">
+                    <div class="mb-6">
+                        <label for="table-number" class="block text-lg font-semibold text-gray-700">Table Number:</label>
+                        <input type="number" id="table-number" name="table-number" class="mt-2 p-3 w-full border border-gray-300 rounded-lg" placeholder="Enter table number" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="seats" class="block text-lg font-semibold text-gray-700">Number of Seats:</label>
+                        <input type="number" id="seats" name="seats" class="mt-2 p-3 w-full border border-gray-300 rounded-lg" placeholder="Enter number of seats" required>
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300">Update Table</button>
+                </form>
+            </div>
+
+            <!-- Feedback Section -->
+            <div id="feedback" class="text-center"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-lg mt-8 py-4">
+        <div class="container mx-auto text-center text-gray-600">
+            <p>© 2025 Cafe Management - All rights reserved</p>
+        </div>
+    </footer>
+
+<script>
+// Handle the form submission to update table details
+document.getElementById('edit-table-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const tableNumber = document.getElementById('table-number').value;
+    const seats = document.getElementById('seats').value;
+
+    const tableData = {
+        table_number: tableNumber,
+        seats: seats
+    };
+
+    // Here you will call your backend API to update the table information
+    fetch('http://0.0.0.0:8088/tables/update/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(tableData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('feedback').innerHTML = `<p class="text-green-600">Table updated successfully!</p>`;
+        } else {
+            document.getElementById('feedback').innerHTML = `<p class="text-red-600">Error updating table. Please try again.</p>`;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('feedback').innerHTML = `<p class="text-red-600">Error updating table. Please try again later.</p>`;
+    });
+});
+</script>
+
+</body>
+</html>

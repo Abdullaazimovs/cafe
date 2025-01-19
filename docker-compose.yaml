@@ -1,0 +1,36 @@
+services:
+  app:
+    build: ./backend
+    volumes:
+      - ./backend:/app
+      - ./backend/static:/app/static
+    ports:
+      - "8077:8077"
+    env_file:
+      - ./backend/.envs/.postgres
+    depends_on:
+      - db
+  db:
+    image: ankane/pgvector
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file:
+      - ./backend/.envs/.postgres
+  nginx:
+    image: nginx:1.23-alpine
+    volumes:
+      - /dev/null:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./backend/static:/static
+    ports:
+      - "8088:8088"
+    depends_on:
+      - app
+  frontend:
+    image: nginx:1.23-alpine
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro   # Mount your HTML, CSS, and static files
+    ports:
+      - "80:80"  # Expose port 80 for the frontend
+    depends_on:
+      - nginx
