@@ -19,7 +19,7 @@ This is a web-based cafe management system built with **Django**, **Python**, an
 - **Version**: Python 3.8+, Django 4+
 - **Docker**: Docker version 27.4.0
 - **Nginx**: nginx:1.23-alpine
-- **Gunicorn**:
+- **Gunicorn**: gunicorn=20.1.0
 
 ## Installation
 
@@ -32,7 +32,7 @@ This is a web-based cafe management system built with **Django**, **Python**, an
 
 ```bash
 git clone https://github.com/yourusername/cafe-management.git
-cd cafe-management
+cd cafe_order_management
 ```
 
 ### 2. Run Docker
